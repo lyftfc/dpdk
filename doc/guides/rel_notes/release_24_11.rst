@@ -67,6 +67,10 @@ New Features
 
   The new statistics are useful for debugging and profiling.
 
+* **Updated Marvell cnxk mempool driver.**
+
+  * Added mempool driver support for CN20K SoC.
+
 
 Removed Items
 -------------

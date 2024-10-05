@@ -43,6 +43,7 @@ all_examples = [
         'packet_ordering',
         'pipeline',
         'ptpclient',
+#		'qdma_testapp',
         'qos_meter',
         'qos_sched',
         'rxtx_callbacks',

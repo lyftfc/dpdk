@@ -599,6 +599,8 @@ static int qdma_is_config_bar(void *dev_hndl, uint8_t is_vf, enum qdma_ip *ip)
 
 	reg_val = qdma_reg_read(dev_hndl, reg_addr);
 
+	// qdma_log_info("qdma_is_config_bar: is_vf: %d; reg_addr: %x; val: %x\n", is_vf, reg_addr, reg_val);
+
 	/** TODO: Version register for VFs is 0x5014 for EQDMA and
 	 *  0x1014 for QDMA/Versal. First time reading 0x5014 for
 	 *  all the device and based on the upper 16 bits value

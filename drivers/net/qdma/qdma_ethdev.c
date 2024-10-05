@@ -44,9 +44,13 @@
 #include <rte_ethdev.h>
 #include <rte_alarm.h>
 #include <rte_cycles.h>
+#include <rte_vfio.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <string.h>
+
+#include <sys/ioctl.h>
+// #include <linux/vfio.h>
 
 #include "qdma.h"
 #include "version.h"
@@ -607,6 +611,69 @@ int qdma_eth_dev_init(struct rte_eth_dev *dev)
 	baseaddr = (uint8_t *)
 			pci_dev->mem_resource[dma_priv->config_bar_idx].addr;
 	dma_priv->bar_addr[dma_priv->config_bar_idx] = baseaddr;
+
+	// qdma_log_info("conf_bar_addr: %p; vfio: \n", baseaddr, rte_vfio_is_enabled());
+	/*
+	int iommu_grp_num;
+	char bdf_str[32];
+	struct rte_pci_addr dev_bdf = pci_dev->addr;
+	snprintf(bdf_str, 32, PCI_PRI_FMT,
+             dev_bdf.domain, dev_bdf.bus, dev_bdf.devid, dev_bdf.function);
+	ret = rte_vfio_get_group_num("/sys/bus/pci/devices", bdf_str, &iommu_grp_num);
+	if (ret == 0) {
+		RTE_LOG(INFO, PMD, "QDMA device %s not bound to VFIO.\n", bdf_str);
+	} else if (ret < 0) {
+		RTE_LOG(ERR, PMD, "Failed to get VFIO group number for device %s.\n", bdf_str);
+		return -EINVAL;
+	} else {
+		// qdma_log_info("%s: vfio_grp_num %d\n", bdf_str, iommu_grp_num);
+		int grp_fd = rte_vfio_get_group_fd(iommu_grp_num);
+		if (grp_fd < 0) {
+			RTE_LOG(ERR, PMD, "Failed to get VFIO group FD for device %s.\n", bdf_str);
+			return -EINVAL;
+		}
+		struct vfio_device_info dev_info = { .argsz = sizeof(dev_info) };
+		int dev_fd = ioctl(grp_fd, VFIO_GROUP_GET_DEVICE_FD, bdf_str);
+		// close(grp_fd);	// We already got device fd, closing grp_fd
+		ret = ioctl(dev_fd, VFIO_DEVICE_GET_INFO, &dev_info);
+		if (ret < 0) {
+			RTE_LOG(ERR, PMD, "Failed to get VFIO device info for %s.\n", bdf_str);
+			return -EINVAL;
+		}
+		unsigned dev_nregion = dev_info.num_regions;
+		unsigned dev_nirq = dev_info.num_irqs;
+		qdma_log_info("VFIO-PCI: %s \tDevice Group: %d\tRegions: %u\tIRQs: %u\n",
+			bdf_str, iommu_grp_num, dev_nregion, dev_nirq);
+		// When using VFIO, the normal sysfs BAR mmap for the PCIe device becomes invalid
+		// We redo the mapping using VFIO-derived memory regions
+		for (unsigned i = 0; i < dev_nregion; i++) {
+			struct vfio_region_info reg = { .argsz = sizeof(reg) };
+			reg.index = i;
+			ret = ioctl(dev_fd, VFIO_DEVICE_GET_REGION_INFO, &reg);
+			// When succeed, pick non-zero-sized regions that are flagged for mmap
+			if (reg.size != 0 && ret >= 0 && (reg.flags & VFIO_REGION_INFO_FLAG_MMAP)) {
+				qdma_log_info("\tRegion %d:\tflgs: %x; cap_ofs: %x; size: %llx; ofs: %llx\n",
+					reg.index, reg.flags, reg.cap_offset, reg.size, reg.offset);
+				// auto region_map = mmap(NULL, reg.size,
+				// 	PROT_READ | PROT_WRITE, MAP_SHARED, _vfio_dev, reg.offset);
+				// if (region_map > 0) {
+				// 	_bar_map.push_back(bar_addr_ofs_t((size_t)region_map, reg.size));
+				// 	printf("\t=> %p", region_map);
+				// }
+
+				// Testing BAR 0
+				if (reg.index == 0) {
+					void *mp = mmap(NULL, reg.size, PROT_READ | PROT_WRITE, MAP_SHARED, dev_fd, reg.offset);
+					if (mp) {
+						qdma_log_info("Mapped BAR 0: %p, reg 0 reads %x\n", mp, *((uint32_t *)mp));
+					} else {
+						qdma_log_info("Mapping BAR 0 failed\n");
+					}
+				}
+			}
+		}
+	}
+	*/
 
 	/*Assigning QDMA access layer function pointers based on the HW design*/
 	dma_priv->hw_access = rte_zmalloc("hwaccess",

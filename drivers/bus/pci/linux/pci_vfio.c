@@ -504,6 +504,9 @@ pci_rte_vfio_setup_device(struct rte_pci_device *dev, int vfio_dev_fd)
 		return -1;
 	}
 
+	RTE_LOG(INFO, EAL, "pci_rte_vfio_setup_device: " PCI_PRI_FMT " dev_fd=%d\n",
+		dev->addr.domain, dev->addr.bus, dev->addr.devid, dev->addr.function, vfio_dev_fd);
+
 	return 0;
 }
 
@@ -746,6 +749,8 @@ pci_vfio_map_resource_primary(struct rte_pci_device *dev)
 	snprintf(pci_addr, sizeof(pci_addr), PCI_PRI_FMT,
 			loc->domain, loc->bus, loc->devid, loc->function);
 
+	RTE_LOG(INFO, EAL, "pci_vfio_map_resource_primary: %s\n", pci_addr);
+
 	ret = rte_vfio_setup_device(rte_pci_get_sysfs_path(), pci_addr,
 					&vfio_dev_fd, &device_info);
 	if (ret)
@@ -845,6 +850,9 @@ pci_vfio_map_resource_primary(struct rte_pci_device *dev)
 		}
 
 		dev->mem_resource[i].addr = maps[i].addr;
+
+		RTE_LOG(INFO, EAL, "\t BAR %d: ofs 0x%llx \tsz 0x%llx \t=> %p\n",
+			i, reg->offset, reg->size, maps[i].addr);
 
 		free(reg);
 	}

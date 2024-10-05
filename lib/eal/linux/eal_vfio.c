@@ -475,6 +475,7 @@ vfio_get_group_fd(struct vfio_config *vfio_cfg,
 			iommu_group_num);
 		return vfio_group_fd;
 	}
+	/* PATCH: writing back vfio_group_fd to (default) config so it can be get twice */
 
 	cur_grp->group_num = iommu_group_num;
 	cur_grp->fd = vfio_group_fd;
@@ -523,6 +524,8 @@ rte_vfio_get_group_fd(int iommu_group_num)
 	/* get the vfio_config it belongs to */
 	vfio_cfg = get_vfio_cfg_by_group_num(iommu_group_num);
 	vfio_cfg = vfio_cfg ? vfio_cfg : default_vfio_cfg;
+	RTE_LOG(INFO, EAL, "rte_vfio_get_group_fd: vfio_cfg = %p\tgroup 0: %d fd %d\n",
+		vfio_cfg, vfio_cfg->vfio_groups[0].group_num, vfio_cfg->vfio_groups[0].fd);
 
 	return vfio_get_group_fd(vfio_cfg, iommu_group_num);
 }
@@ -971,6 +974,8 @@ rte_vfio_setup_device(const char *sysfs_base, const char *dev_addr,
 		rte_vfio_clear_group(vfio_group_fd);
 		return -1;
 	}
+	
+	RTE_LOG(INFO, EAL, "rte_vfio_setup_device: %s %s fd=%d\n", sysfs_base, dev_addr, *vfio_dev_fd);
 
 	/* test and setup the device */
 dev_get_info:
@@ -1085,6 +1090,8 @@ rte_vfio_enable(const char *modname)
 	int vfio_available;
 	const struct internal_config *internal_conf =
 		eal_get_internal_configuration();
+
+	RTE_LOG(INFO, EAL, "rte_vfio_enable: %s\n", modname);
 
 	rte_spinlock_recursive_t lock = RTE_SPINLOCK_RECURSIVE_INITIALIZER;
 

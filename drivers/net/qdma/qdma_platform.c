@@ -137,6 +137,8 @@ void qdma_reg_write(void *dev_hndl, uint32_t reg_offst, uint32_t val)
 	qdma_dev = ((struct rte_eth_dev *)dev_hndl)->data->dev_private;
 	bar_addr = (uint64_t)qdma_dev->bar_addr[qdma_dev->config_bar_idx];
 	*((volatile uint32_t *)(bar_addr + reg_offst)) = val;
+
+	// qdma_log_info("qdma_reg_write %lx->%x\n", bar_addr + reg_offst, val);
 }
 
 /*****************************************************************************/
@@ -157,6 +159,8 @@ uint32_t qdma_reg_read(void *dev_hndl, uint32_t reg_offst)
 	qdma_dev = ((struct rte_eth_dev *)dev_hndl)->data->dev_private;
 	bar_addr = (uint64_t)qdma_dev->bar_addr[qdma_dev->config_bar_idx];
 	val = *((volatile uint32_t *)(bar_addr + reg_offst));
+
+	// qdma_log_info("qdma_reg_read %lx->%x\n", bar_addr + reg_offst, val);
 
 	return val;
 }

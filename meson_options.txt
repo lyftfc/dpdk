@@ -34,7 +34,7 @@ option('kernel_dir', type: 'string', value: '', description:
        'Path to the kernel for building kernel modules. Headers must be in $kernel_dir or $kernel_dir/build. Modules will be installed in /lib/modules.')
 option('machine', type: 'string', value: 'auto', description:
        'Alias of cpu_instruction_set.')
-option('max_ethports', type: 'integer', value: 32, description:
+option('max_ethports', type: 'integer', value: 256, description:
        'maximum number of Ethernet devices')
 option('max_lcores', type: 'string', value: 'default', description:
        'Set maximum number of cores/threads supported by EAL; "default" is different per-arch, "detect" detects the number of cores on the build machine.')

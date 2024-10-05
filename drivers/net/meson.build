@@ -51,6 +51,7 @@ drivers = [
         'pcap',
         'pfe',
         'qede',
+		'qdma',
         'ring',
         'sfc',
         'softnic',

@@ -643,6 +643,12 @@ int qdma_eth_dev_init(struct rte_eth_dev *dev)
 		dma_priv->bar_addr[dma_priv->user_bar_idx] = baseaddr;
 	}
 
+	if (dma_priv->bypass_bar_idx >= 0) {
+		baseaddr = (uint8_t *)
+			     pci_dev->mem_resource[dma_priv->bypass_bar_idx].addr;
+		dma_priv->bar_addr[dma_priv->bypass_bar_idx] = baseaddr;
+	}
+
 	PMD_DRV_LOG(INFO, "QDMA device driver probe:");
 
 	qdma_dev_ops_init(dev);

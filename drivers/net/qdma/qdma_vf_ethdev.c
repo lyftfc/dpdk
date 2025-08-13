@@ -1124,6 +1124,12 @@ static int eth_qdma_vf_dev_init(struct rte_eth_dev *dev)
 		dma_priv->bar_addr[dma_priv->user_bar_idx] = baseaddr;
 	}
 
+	if (dma_priv->bypass_bar_idx >= 0) {
+		baseaddr = (uint8_t *)
+			     pci_dev->mem_resource[dma_priv->bypass_bar_idx].addr;
+		dma_priv->bar_addr[dma_priv->bypass_bar_idx] = baseaddr;
+	}
+
 	if (dma_priv->ip_type == QDMA_VERSAL_HARD_IP &&
 			dma_priv->device_type ==
 			QDMA_DEVICE_VERSAL_CPM4)

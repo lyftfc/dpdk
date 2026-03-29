@@ -1052,13 +1052,13 @@ int main(int argc, char **argv)
 	ret = rte_eth_dev_callback_register(RTE_ETH_ALL, RTE_ETH_EVENT_INTR_RMV,
 				dev_remove_callback, NULL);
 	if (ret < 0)
-		rte_exit(EXIT_FAILURE, "Failed to register dev_remove_callback\n");
+		;//rte_exit(EXIT_FAILURE, "Failed to register dev_remove_callback\n");
 
 	ret = rte_eth_dev_callback_register(RTE_ETH_ALL,
 			RTE_ETH_EVENT_INTR_RESET,
 			dev_reset_callback, NULL);
 	if (ret < 0)
-		rte_exit(EXIT_FAILURE, "Failed to register dev_reset_callback\n");
+		;//rte_exit(EXIT_FAILURE, "Failed to register dev_reset_callback\n");
 
 #if 1
 	ret = parse_cmdline(argc, argv);

@@ -1011,6 +1011,7 @@ static struct rte_pci_driver rte_qdma_pmd = {
 bool
 is_pf_device_supported(struct rte_eth_dev *dev)
 {
+	//printf("%s %s\n", dev->device->driver->name, rte_qdma_pmd.driver.name);
 	if (strcmp(dev->device->driver->name, rte_qdma_pmd.driver.name))
 		return false;
 
